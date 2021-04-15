@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.example.addon.mixin",
+  "package": "net.gommehd.buildteam.addon.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "example.refmap.json",
   "verbose": false,
@@ -8,6 +8,7 @@
     "defaultRequire": 1
   },
   "client": [
-    "ExampleMixin"
+    "CreativeInventoryMixin",
+    "LabyModAddonMixin"
   ]
 }

@@ -1,6 +1,11 @@
 {
-  "name": "Example Addon",
+  "name": "WorldEdit IDs for 1.16",
   "uuid": "%uuid%",
-  "mainClass": "com.example.addon.ExampleAddon",
-  "transformerClass": "com.example.addon.ExampleAddonTransformer"
+  "mainClass": "net.gommehd.buildteam.addon.BuildTeamAddon",
+  "transformerClass": "net.gommehd.buildteam.addon.BuildTeamAddonTransformer",
+  "description": "The addon reactivates the block IDs in the 1.16 version. Requires the corresponding WorldEdit version.",
+  "version": 1,
+  "author": "GommeHD.net Development Team",
+  "category": 2,
+  "icon": "https://cdn.discordapp.com/attachments/728692699070333039/830570355403915275/unnamed.png"
 }
