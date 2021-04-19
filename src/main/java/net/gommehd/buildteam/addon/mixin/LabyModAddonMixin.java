@@ -5,14 +5,16 @@ import net.gommehd.buildteam.addon.BuildTeamAddon;
 import net.gommehd.buildteam.addon.updater.UpdateResponse;
 import net.labymod.addon.online.info.AddonInfo;
 import net.labymod.settings.elements.AddonElement;
-import net.labymod.utils.ModColor;
 import net.labymod.utils.manager.TooltipHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.toasts.SystemToast;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,7 +46,7 @@ public abstract class LabyModAddonMixin {
         int marginX = 30;
         int marginY = (maxY - y - 14) / 2;
         if (drawButton(matrixStack, new ResourceLocation("labymod/addons/buildteam/reload.png"), y, 14, 6, marginX, marginY, maxX, maxY, mouseX, mouseY)) {
-            TooltipHelper.getHelper().pointTooltip(mouseX, mouseY, 0L, ModColor.cl("b") + "Reload Block IDs");
+            TooltipHelper.getHelper().pointTooltip(mouseX, mouseY, 0L, "Refresh Block IDs");
             hoverButtonId = 99;
         }
     }
@@ -63,7 +65,7 @@ public abstract class LabyModAddonMixin {
         Minecraft.getInstance().getToastGui().add(new SystemToast(
                 SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER,
                 new StringTextComponent("GommeHD.net BuildTeam"),
-                new StringTextComponent("Fetching block IDs")
+                new StringTextComponent("Retrieving block IDs")
         ));
         BuildTeamAddon.getAddon().getUpdater().update(response -> {
             IFormattableTextComponent sub = new StringTextComponent("Update failed")

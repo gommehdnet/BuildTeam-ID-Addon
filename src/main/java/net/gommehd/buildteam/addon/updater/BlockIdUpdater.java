@@ -2,9 +2,9 @@ package net.gommehd.buildteam.addon.updater;
 
 import net.gommehd.buildteam.addon.BuildTeamAddon;
 import net.gommehd.buildteam.addon.registry.ItemRegistry;
+import net.gommehd.buildteam.addon.utility.ComparableVersion;
 import net.labymod.utils.request.DownloadServerRequest;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.artifact.versioning.ComparableVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 public class BlockIdUpdater {
 
-    private static final String BASE_URL = "https://raw.githubusercontent.com/gommehdnet/BuildTeam-ID-Addon/.data/";
+    private static final String BASE_URL = "https://raw.githubusercontent.com/gommehdnet/BuildTeam-ID-Addon/main/.data/";
     private static final String VERSION_URL = BASE_URL + "version";
     private static final String ITEMS_URL = BASE_URL + "items.json";
 
@@ -47,6 +47,7 @@ public class BlockIdUpdater {
             String remoteVersion = DownloadServerRequest.getString(VERSION_URL);
             if (!isNewVersion(remoteVersion)) {
                 response.accept(UpdateResponse.SKIPPED);
+                inProgress.set(false);
                 return;
             }
             FileUtils.copyURLToFile(new URL(ITEMS_URL), BuildTeamAddon.getAddon().getBlocksFile());
@@ -67,7 +68,8 @@ public class BlockIdUpdater {
             return true;
         ComparableVersion local = new ComparableVersion(localVersion);
         ComparableVersion remote = new ComparableVersion(remoteVersion);
-        return local.compareTo(remote) > 0;
+        System.out.println(local.toString() + " vs " + remote.toString() + " with " + local.compareTo(remote));
+        return local.compareTo(remote) < 0;
     }
 
     public AtomicBoolean getInProgress() {
