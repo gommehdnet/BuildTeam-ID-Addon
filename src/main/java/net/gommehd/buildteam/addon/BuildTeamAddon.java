@@ -2,9 +2,9 @@ package net.gommehd.buildteam.addon;
 
 import net.gommehd.buildteam.addon.registry.ItemRegistry;
 import net.gommehd.buildteam.addon.updater.BlockIdUpdater;
+import net.labymod.addon.AddonLoader;
 import net.labymod.api.LabyModAddon;
 import net.labymod.settings.elements.SettingsElement;
-import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.util.List;
@@ -12,14 +12,20 @@ import java.util.List;
 public class BuildTeamAddon extends LabyModAddon {
 
     private static BuildTeamAddon addon;
-    private final BlockIdUpdater updater = new BlockIdUpdater();
+    private BlockIdUpdater updater;
+    private File dataDirectory;
     private File blocksFile;
     private ItemRegistry itemRegistry;
 
     @Override
     public void onEnable() {
         addon = this;
-        blocksFile = new File(Minecraft.getInstance().gameDir + File.separator + "LabyMod" + File.separator + "blockIds.json");
+        this.dataDirectory = new File(AddonLoader.getConfigDirectory() + File.separator + "LegacyIDs");
+        if (!dataDirectory.exists()) {
+            dataDirectory.mkdirs();
+        }
+        this.blocksFile = new File(dataDirectory, "blockIDs.json");
+        this.updater = new BlockIdUpdater();
         if (!blocksFile.exists()) {
             updater.update(aBoolean -> {
             });
@@ -28,12 +34,10 @@ public class BuildTeamAddon extends LabyModAddon {
 
     @Override
     public void loadConfig() {
-
     }
 
     @Override
     protected void fillSettings(List<SettingsElement> list) {
-
     }
 
     public static BuildTeamAddon getAddon() {
@@ -42,6 +46,10 @@ public class BuildTeamAddon extends LabyModAddon {
 
     public BlockIdUpdater getUpdater() {
         return updater;
+    }
+
+    public File getDataDirectory() {
+        return dataDirectory;
     }
 
     public File getBlocksFile() {

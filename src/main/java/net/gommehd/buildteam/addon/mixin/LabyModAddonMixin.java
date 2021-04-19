@@ -2,8 +2,8 @@ package net.gommehd.buildteam.addon.mixin;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.gommehd.buildteam.addon.BuildTeamAddon;
+import net.gommehd.buildteam.addon.updater.UpdateResponse;
 import net.labymod.addon.online.info.AddonInfo;
-import net.labymod.addon.online.info.OnlineAddonInfo;
 import net.labymod.settings.elements.AddonElement;
 import net.labymod.utils.ModColor;
 import net.labymod.utils.manager.TooltipHelper;
@@ -59,24 +59,26 @@ public abstract class LabyModAddonMixin {
     public void mouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
         if (hoverButtonId != 99 || BuildTeamAddon.getAddon().getUpdater().getInProgress().get())
             return;
-        BuildTeamAddon.getAddon().getUpdater().update(result -> {
-            Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        Minecraft.getInstance().getToastGui().add(new SystemToast(
+                SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER,
+                new StringTextComponent("GommeHD.net BuildTeam"),
+                new StringTextComponent("Fetching block IDs")
+        ));
+        BuildTeamAddon.getAddon().getUpdater().update(response -> {
+            IFormattableTextComponent sub = new StringTextComponent("Update failed")
+                    .setStyle(Style.EMPTY.setFormatting(TextFormatting.RED));
+            if (response == UpdateResponse.SUCCESS) {
+                sub = new StringTextComponent("Update succeeded")
+                        .setStyle(Style.EMPTY.setFormatting(TextFormatting.GREEN));
+            }
+            if (response == UpdateResponse.SKIPPED) {
+                sub = new StringTextComponent("Already up to date")
+                        .setStyle(Style.EMPTY.setFormatting(TextFormatting.GOLD));
+            }
             Minecraft.getInstance().getToastGui().add(new SystemToast(
                     SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER,
-                    new StringTextComponent("GommeHD.net BuildTeam"),
-                    new StringTextComponent("Fetching block IDs")
-            ));
-            BuildTeamAddon.getAddon().getUpdater().update(response -> {
-                IFormattableTextComponent sub = new StringTextComponent("Update failed!")
-                        .setStyle(Style.EMPTY.setFormatting(TextFormatting.RED));
-                if (response) {
-                    sub = new StringTextComponent("Update succeeded!")
-                            .setStyle(Style.EMPTY.setFormatting(TextFormatting.GREEN));
-                }
-                Minecraft.getInstance().getToastGui().add(new SystemToast(
-                        SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER,
-                        new StringTextComponent("GommeHD.net BuildTeam"), sub));
-            });
+                    new StringTextComponent("GommeHD.net BuildTeam"), sub));
         });
     }
 

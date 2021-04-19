@@ -2,15 +2,14 @@ package net.gommehd.buildteam.addon.updater;
 
 import net.gommehd.buildteam.addon.BuildTeamAddon;
 import net.gommehd.buildteam.addon.registry.ItemRegistry;
-import org.apache.commons.io.IOUtils;
+import net.labymod.utils.request.DownloadServerRequest;
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -19,41 +18,56 @@ import java.util.function.Consumer;
  */
 public class BlockIdUpdater {
 
-    private static URL url;
+    private static final String BASE_URL = "https://raw.githubusercontent.com/gommehdnet/BuildTeam-ID-Addon/.data/";
+    private static final String VERSION_URL = BASE_URL + "version";
+    private static final String ITEMS_URL = BASE_URL + "items.json";
 
     private final AtomicBoolean inProgress = new AtomicBoolean(false);
+    private final File localVersionFile;
 
     public BlockIdUpdater() {
-        try {
-            url = new URL("https://id.fantaflash.de/assets/blocks.json");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        localVersionFile = new File(BuildTeamAddon.getAddon().getDataDirectory(), "version");
+        if (!localVersionFile.exists()) {
+            try {
+                localVersionFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     /**
      * Tries to download the new list of block ids, parse it, and update the current ItemRegistry with the new data
      *
-     * @param result Contains {@code true} if the update succeeded, {@code false} otherwise.
+     * @param response Contains the response of the update operation.
      */
-    public void update(Consumer<Boolean> result) {
+    public void update(Consumer<UpdateResponse> response) {
         inProgress.set(true);
         try {
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.addRequestProperty("User-Agent", "Mozilla/4.76");
-            connection.connect();
-            try (InputStream inputStream = connection.getInputStream();
-                 OutputStream outputStream = new FileOutputStream(BuildTeamAddon.getAddon().getBlocksFile())) {
-                IOUtils.copy(inputStream, outputStream);
+            String remoteVersion = DownloadServerRequest.getString(VERSION_URL);
+            if (!isNewVersion(remoteVersion)) {
+                response.accept(UpdateResponse.SKIPPED);
+                return;
             }
-            connection.disconnect();
+            FileUtils.copyURLToFile(new URL(ITEMS_URL), BuildTeamAddon.getAddon().getBlocksFile());
             BuildTeamAddon.getAddon().setItemRegistry(new ItemRegistry());
-            result.accept(true);
-        } catch (IOException e) {
+            FileUtils.writeStringToFile(localVersionFile, remoteVersion, StandardCharsets.UTF_8);
+            response.accept(UpdateResponse.SUCCESS);
+        } catch (Exception e) {
             e.printStackTrace();
-            result.accept(false);
+            response.accept(UpdateResponse.FAILED);
         }
         inProgress.set(false);
+    }
+
+
+    private boolean isNewVersion(String remoteVersion) throws Exception {
+        String localVersion = FileUtils.readFileToString(localVersionFile, StandardCharsets.UTF_8);
+        if (localVersion == null || localVersion.isEmpty())
+            return true;
+        ComparableVersion local = new ComparableVersion(localVersion);
+        ComparableVersion remote = new ComparableVersion(remoteVersion);
+        return local.compareTo(remote) > 0;
     }
 
     public AtomicBoolean getInProgress() {
