@@ -41,6 +41,9 @@ public class CreativeInventoryMixin {
         // Loop through all generated tooltips
         for (int i = 0; i < data.size(); i++) {
             ITextComponent component = data.get(i);
+            if(component == null) {
+                continue;
+            }
             // If the raw line equals the minecraft key, append the ID to this line
             if (component.getString().equals(Registry.ITEM.getKey(itemStack.getItem()).toString())) {
                 // Get the numeric id of the current item, check if an ID exists in the file, otherwise don't do anything

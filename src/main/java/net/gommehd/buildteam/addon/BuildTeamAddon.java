@@ -26,6 +26,7 @@ public class BuildTeamAddon extends LabyModAddon {
         }
         this.blocksFile = new File(dataDirectory, "blockIDs.json");
         this.updater = new BlockIdUpdater();
+        setItemRegistry(new ItemRegistry());
         if (!blocksFile.exists()) {
             updater.update(aBoolean -> {
             });
