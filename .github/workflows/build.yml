@@ -1,0 +1,27 @@
+name: Build Addon
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      # Add Execute permissions to gradle wrapper
+      - name: Change wrapper permissions
+        run: 'chmod +x gradlew'
+      # Build the addon
+      - name: Download LabyMod-API
+        run: 'sh gradlew downloadAPI --no-daemon'
+      # Build the addon
+      - name: Build with Gradle
+        run: 'sh gradlew build --no-daemon'
+      # Upload the built addon
+      - uses: actions/upload-artifact@v2
+        with:
+          name: 'WorldEdit IDs for 1.16'
+          path: ./build/libs/*.jar

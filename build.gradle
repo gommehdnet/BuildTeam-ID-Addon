@@ -1,13 +1,13 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
         maven { url = 'https://repo.spongepowered.org/maven' }
         maven {
             name = 'impactdevelopment-repo'
             url = 'https://impactdevelopment.github.io/maven/'
         }
-        jcenter()
-        mavenCentral()
+        maven { url = 'https://files.minecraftforge.net/maven' }
     }
     dependencies {
         classpath group: 'com.github.ImpactDevelopment', name: 'ForgeGradle', version: '3.0.115'
