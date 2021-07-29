@@ -2,7 +2,7 @@
   "required": true,
   "package": "net.gommehd.buildteam.addon.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "example.refmap.json",
+  "refmap": "gommehdnet-buildteam-ids.refmap.json",
   "verbose": false,
   "injectors": {
     "defaultRequire": 1

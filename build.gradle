@@ -24,7 +24,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.0.0-BETA'
+version = '1.0.1'
 group = 'net.gommehd'
 archivesBaseName = 'WorldEdit IDs for 1.16'
 
@@ -34,7 +34,7 @@ def mcpVersion = [channel: 'snapshot', version: '20201028-1.16.3']
 
 mixin {
     defaultObfuscationEnv searge
-    add sourceSets.main, "example.refmap.json"
+    add sourceSets.main, "gommehdnet-buildteam-ids.refmap.json"
 }
 
 minecraft {
